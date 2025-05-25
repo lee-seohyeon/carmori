@@ -10,6 +10,9 @@ class AppProvider with ChangeNotifier {
   ViewMode _viewMode = ViewMode.list;
   ViewMode get viewMode => _viewMode;
   
+  String _selectedFilter = '전체';
+  String get selectedFilter => _selectedFilter;
+  
   List<PicnicSpot> _filteredSpots = [];
   List<PicnicSpot> get filteredSpots => _filteredSpots;
   
@@ -53,6 +56,11 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setFilter(String filter) {
+    _selectedFilter = filter;
+    _applyFilters();
+  }
+
   void setSearchQuery(String query) {
     _searchQuery = query;
     _applyFilters();
@@ -90,6 +98,7 @@ class AppProvider with ChangeNotifier {
 
   void clearFilters() {
     _searchQuery = '';
+    _selectedFilter = '전체';
     _freeParking = false;
     _hasToilet = false;
     _oceanView = false;
@@ -100,20 +109,50 @@ class AppProvider with ChangeNotifier {
   }
 
   void _applyFilters() {
-    _filteredSpots = _dataService.filterSpots(
-      searchQuery: _searchQuery.isEmpty ? null : _searchQuery,
-      freeParking: _freeParking ? true : null,
-      hasToilet: _hasToilet ? true : null,
-      oceanView: _oceanView ? true : null,
-      nightView: _nightView ? true : null,
-      riverView: _riverView ? true : null,
-      sunsetView: _sunsetView ? true : null,
-    );
+    var filtered = _dataService.spots;
+
+    // 선택된 필터에 따라 장소 필터링
+    if (_selectedFilter != '전체') {
+      filtered = filtered.where((spot) {
+        switch (_selectedFilter) {
+          case '바다뷰':
+            return spot.hasOceanView;
+          case '야경명소':
+            return spot.features.contains('야경명소');
+          case '강/호수뷰':
+            return spot.hasRiverView;
+          case '일몰명소':
+            return spot.features.contains('일몰명소');
+          default:
+            return true;
+        }
+      }).toList();
+    }
+
+    // 검색어 필터링
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered.where((spot) =>
+          spot.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          (spot.address?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
+          spot.features.toLowerCase().contains(_searchQuery.toLowerCase())
+      ).toList();
+    }
+
+    // 기타 필터 적용
+    if (_freeParking) filtered = filtered.where((spot) => spot.hasFreeParking).toList();
+    if (_hasToilet) filtered = filtered.where((spot) => spot.hasToilet).toList();
+    if (_oceanView) filtered = filtered.where((spot) => spot.hasOceanView).toList();
+    if (_nightView) filtered = filtered.where((spot) => spot.hasNightView).toList();
+    if (_riverView) filtered = filtered.where((spot) => spot.hasRiverView).toList();
+    if (_sunsetView) filtered = filtered.where((spot) => spot.hasSunsetView).toList();
+
+    _filteredSpots = filtered;
     notifyListeners();
   }
 
   bool get hasActiveFilters {
     return _searchQuery.isNotEmpty ||
+        _selectedFilter != '전체' ||
         _freeParking ||
         _hasToilet ||
         _oceanView ||

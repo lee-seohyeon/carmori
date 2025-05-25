@@ -1,4 +1,5 @@
-import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
+import 'package:flutter/material.dart';
+import 'package:heroicons/heroicons.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_provider.dart';
@@ -16,25 +17,24 @@ class SpotListView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.search_off,
+                HeroIcon(
+                  HeroIcons.magnifyingGlass,
+                  style: HeroIconStyle.outline,
+                  color: Colors.black38,
                   size: 64,
-                  color: Colors.grey[400],
                 ),
                 const SizedBox(height: 16),
                 Text(
                   '검색 결과가 없습니다',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Colors.black54,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '다른 검색어나 필터를 시도해보세요',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[500],
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.black38,
                   ),
                 ),
               ],
@@ -43,7 +43,7 @@ class SpotListView extends StatelessWidget {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.all(16),
           itemCount: provider.filteredSpots.length,
           itemBuilder: (context, index) {
             final spot = provider.filteredSpots[index];
@@ -62,16 +62,9 @@ class SpotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Neumorphic(
-        style: NeumorphicStyle(
-          shape: NeumorphicShape.flat,
-          boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(16)),
-          depth: 8,
-          lightSource: LightSource.topLeft,
-          color: NeumorphicTheme.baseColor(context),
-        ),
+      child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,36 +73,26 @@ class SpotCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: NeumorphicText(
+                  child: Text(
                     spot.name,
-                    style: NeumorphicStyle(
-                      depth: 4,
-                      color: NeumorphicTheme.baseColor(context),
-                    ),
-                    textStyle: NeumorphicTextStyle(
-                      fontSize: 18,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
                 if (spot.address != null)
-                  NeumorphicButton(
+                  IconButton.filled(
                     onPressed: () => _openMap(spot.address!),
-                    style: NeumorphicStyle(
-                      shape: NeumorphicShape.flat,
-                      boxShape: const NeumorphicBoxShape.circle(),
-                      depth: 4,
-                      lightSource: LightSource.topLeft,
-                      color: Colors.blue[100],
+                    icon: const HeroIcon(
+                      HeroIcons.mapPin,
+                      style: HeroIconStyle.outline,
+                      size: 18,
                     ),
-                    padding: const EdgeInsets.all(8),
-                    child: NeumorphicIcon(
-                      Icons.map,
-                      style: NeumorphicStyle(
-                        depth: 2,
-                        color: Colors.blue[700],
-                      ),
-                      size: 16,
+                    style: IconButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      minimumSize: const Size(36, 36),
                     ),
                   ),
               ],
@@ -119,51 +102,48 @@ class SpotCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  NeumorphicIcon(
-                    Icons.location_on,
-                    style: NeumorphicStyle(
-                      depth: 2,
-                      color: Colors.grey[600],
-                    ),
-                    size: 16,
+                  HeroIcon(
+                    HeroIcons.mapPin,
+                    style: HeroIconStyle.outline,
+                    color: const Color(0xFF8E8E93),
+                    size: 14,
                   ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       spot.address!,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF8E8E93),
+                        fontFamily: 'Pretendard',
+                        fontWeight: FontWeight.w400,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
             ],
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             // Features
             Wrap(
-              spacing: 6,
-              runSpacing: 6,
+              spacing: 8,
+              runSpacing: 8,
               children: spot.featuresList.map((feature) {
-                return Neumorphic(
-                  style: NeumorphicStyle(
-                    shape: NeumorphicShape.convex,
-                    boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(12)),
-                    depth: 3,
-                    lightSource: LightSource.topLeft,
-                    color: _getFeatureColor(feature),
-                  ),
+                return Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _getFeatureColor(feature),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     feature,
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: _getFeatureTextColor(feature),
                       fontWeight: FontWeight.w500,
                     ),
@@ -172,14 +152,14 @@ class SpotCard extends StatelessWidget {
               }).toList(),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             // Info Grid
             Row(
               children: [
                 Expanded(
                   child: _InfoItem(
-                    icon: Icons.local_parking,
+                    icon: HeroIcons.truck,
                     label: '주차비',
                     value: spot.parkingFee ?? '정보없음',
                     color: spot.hasFreeParking ? Colors.green : Colors.orange,
@@ -188,7 +168,7 @@ class SpotCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _InfoItem(
-                    icon: Icons.wc,
+                    icon: HeroIcons.buildingOffice,
                     label: '화장실',
                     value: spot.nearbyToilet ?? '정보없음',
                     color: spot.hasToilet ? Colors.blue : Colors.grey,
@@ -198,20 +178,21 @@ class SpotCard extends StatelessWidget {
             ),
 
             if (spot.note != null) ...[
-              const SizedBox(height: 12),
-              Neumorphic(
-                style: NeumorphicStyle(
-                  shape: NeumorphicShape.concave,
-                  boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
-                  depth: -2,
-                  lightSource: LightSource.topLeft,
-                  color: NeumorphicTheme.baseColor(context),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.grey[200]!,
+                    width: 1,
+                  ),
                 ),
-                padding: const EdgeInsets.all(12),
                 child: Text(
                   spot.note!,
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey[700],
                     height: 1.4,
                   ),
@@ -225,33 +206,11 @@ class SpotCard extends StatelessWidget {
   }
 
   Color _getFeatureColor(String feature) {
-    switch (feature) {
-      case '바다뷰':
-        return Colors.blue[100]!;
-      case '야경명소':
-        return Colors.purple[100]!;
-      case '강/호수뷰':
-        return Colors.cyan[100]!;
-      case '일몰명소':
-        return Colors.orange[100]!;
-      default:
-        return Colors.grey[200]!;
-    }
+    return Colors.grey[100]!;
   }
 
   Color _getFeatureTextColor(String feature) {
-    switch (feature) {
-      case '바다뷰':
-        return Colors.blue[700]!;
-      case '야경명소':
-        return Colors.purple[700]!;
-      case '강/호수뷰':
-        return Colors.cyan[700]!;
-      case '일몰명소':
-        return Colors.orange[700]!;
-      default:
-        return Colors.grey[700]!;
-    }
+    return Colors.grey[700]!;
   }
 
   void _openMap(String address) async {
@@ -265,7 +224,7 @@ class SpotCard extends StatelessWidget {
 }
 
 class _InfoItem extends StatelessWidget {
-  final IconData icon;
+  final HeroIcons icon;
   final String label;
   final String value;
   final Color color;
@@ -279,45 +238,42 @@ class _InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Neumorphic(
-      style: NeumorphicStyle(
-        shape: NeumorphicShape.concave,
-        boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(8)),
-        depth: -2,
-        lightSource: LightSource.topLeft,
-        color: color.withOpacity(0.1),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.black12,
+          width: 1,
+        ),
       ),
-      padding: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              NeumorphicIcon(
+              HeroIcon(
                 icon,
-                style: NeumorphicStyle(
-                  depth: 2,
-                  color: color,
-                ),
-                size: 14,
+                style: HeroIconStyle.outline,
+                size: 16,
+                color: Colors.black,
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 6),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: color,
-                  fontWeight: FontWeight.w500,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.grey[700],
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.black87,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

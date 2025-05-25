@@ -87,8 +87,8 @@ class _SpotMapViewState extends State<SpotMapView> {
                 margin-bottom: 8px;
             }
             .feature-tag {
-                background: #e3f2fd;
-                color: #1976d2;
+                background: #f5f5f5;
+                color: #666666;
                 padding: 2px 6px;
                 border-radius: 8px;
                 font-size: 10px;
@@ -189,28 +189,23 @@ class _SpotMapViewState extends State<SpotMapView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                NeumorphicIcon(
+                Icon(
                   Icons.map_outlined,
-                  style: NeumorphicStyle(
-                    depth: 4,
-                    color: Colors.grey[400],
-                  ),
                   size: 64,
+                  color: Colors.black38,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   '표시할 장소가 없습니다',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Colors.black54,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '필터를 조정하여 장소를 찾아보세요',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[500],
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.black38,
                   ),
                 ),
               ],
@@ -221,51 +216,37 @@ class _SpotMapViewState extends State<SpotMapView> {
         return Stack(
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: Neumorphic(
-                style: NeumorphicStyle(
-                  shape: NeumorphicShape.flat,
-                  boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(16)),
-                  depth: 8,
-                  lightSource: LightSource.topLeft,
-                  color: NeumorphicTheme.baseColor(context),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: WebViewWidget(controller: _controller),
-                ),
+              margin: const EdgeInsets.all(16),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: WebViewWidget(controller: _controller),
               ),
             ),
             if (_isLoading)
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                child: Neumorphic(
-                  style: NeumorphicStyle(
-                    shape: NeumorphicShape.flat,
-                    boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(16)),
-                    depth: 8,
-                    lightSource: LightSource.topLeft,
-                    color: NeumorphicTheme.baseColor(context),
-                  ),
-                  child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 16),
-                        Text('지도를 불러오는 중...'),
-                      ],
-                    ),
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('지도를 불러오는 중...'),
+                    ],
                   ),
                 ),
               ),
             // 지도 컨트롤 버튼들
             Positioned(
-              top: 16,
-              right: 36,
+              top: 32,
+              right: 32,
               child: Column(
                 children: [
-                  NeumorphicButton(
+                  FloatingActionButton.small(
                     onPressed: () {
                       // 현재 위치로 이동
                       _controller.runJavaScript('''
@@ -279,25 +260,11 @@ class _SpotMapViewState extends State<SpotMapView> {
                         }
                       ''');
                     },
-                    style: NeumorphicStyle(
-                      shape: NeumorphicShape.convex,
-                      boxShape: const NeumorphicBoxShape.circle(),
-                      depth: 6,
-                      lightSource: LightSource.topLeft,
-                      color: NeumorphicTheme.baseColor(context),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: NeumorphicIcon(
-                      Icons.my_location,
-                      style: NeumorphicStyle(
-                        depth: 2,
-                        color: Colors.blue[700],
-                      ),
-                      size: 20,
-                    ),
+                    heroTag: "location",
+                    child: const Icon(Icons.my_location),
                   ),
                   const SizedBox(height: 8),
-                  NeumorphicButton(
+                  FloatingActionButton.small(
                     onPressed: () {
                       // 전체 마커가 보이도록 지도 범위 조정
                       _controller.runJavaScript('''
@@ -306,22 +273,8 @@ class _SpotMapViewState extends State<SpotMapView> {
                         map.fitBounds(bounds);
                       ''');
                     },
-                    style: NeumorphicStyle(
-                      shape: NeumorphicShape.convex,
-                      boxShape: const NeumorphicBoxShape.circle(),
-                      depth: 6,
-                      lightSource: LightSource.topLeft,
-                      color: NeumorphicTheme.baseColor(context),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: NeumorphicIcon(
-                      Icons.zoom_out_map,
-                      style: NeumorphicStyle(
-                        depth: 2,
-                        color: Colors.green[700],
-                      ),
-                      size: 20,
-                    ),
+                    heroTag: "zoom",
+                    child: const Icon(Icons.zoom_out_map),
                   ),
                 ],
               ),
