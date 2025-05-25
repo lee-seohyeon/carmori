@@ -1,0 +1,157 @@
+{
+  "last_updated": "2024-03-21",
+  "spots": [
+    {
+      "name": "강화함상공원입구",
+      "address": "인천 강화군 내가면 외포리",
+      "features": "바다뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "건너편에 바다 바로앞에 벤치가.. (석모대교뷰)"
+    },
+    {
+      "name": "강화 해누리공원",
+      "address": "인천 강화군 내가면 해안서로 1110",
+      "features": "바다뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": null
+    },
+    {
+      "name": "외포항젓갈수산시장",
+      "address": "인천 강화군 내가면 해안서로 1110",
+      "features": "바다뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "갈매기명소\n수산시장에서 회 사와서 벤치에 앉아서 먹을수 있음"
+    },
+    {
+      "name": "석모도만남의광장공영주차장",
+      "address": "인천 강화군 삼산면 석포리 547-15",
+      "features": "바다뷰",
+      "parking_fee": "일 2,000원 (선불)",
+      "nearby_toilet": "주차장에 있음",
+      "note": "2,000원을 선불로 내면 시간 제한 없이 이용이 가능\n지대가 높아서 바다와 석모대교가 한눈에 보임"
+    },
+    {
+      "name": "월곶포구",
+      "address": "경기도 시흥시 월곶동 1050",
+      "features": "바다뷰, 야경명소",
+      "parking_fee": "무료",
+      "nearby_toilet": "월곶도서관",
+      "note": "은근 야경명소..\n불법주차의 성지라 그냥 대면 됨"
+    },
+    {
+      "name": "춘천신매대교옆",
+      "address": "강원특별자치도 춘천시 고산배터길 30",
+      "features": "강/호수뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "북한강 바로 앞에서 차크닉 가능"
+    },
+    {
+      "name": "고구마섬야구장주차장",
+      "address": "강원 춘천시 사농동 334-2",
+      "features": "강/호수뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "사람 진짜 없고 섬인데 바로 옆이 북한강임"
+    },
+    {
+      "name": "배곧한울공원",
+      "address": null,
+      "features": "야경명소, 바다뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": "주차장에 있음",
+      "note": "주차연습하기 좋음"
+    },
+    {
+      "name": "솔찬공원",
+      "address": "인천 연수구 컨벤시아대로391번길 20",
+      "features": "바다뷰, 야경명소",
+      "parking_fee": "?",
+      "nearby_toilet": null,
+      "note": "주차비 ??"
+    },
+    {
+      "name": "선학별빛도서관",
+      "address": "인천 연수구 넘말로 30",
+      "features": "야경명소",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "도서관에 있는 큰 달에 불빛이 들어올 때가 있는데 매우 아름다움\n주차 자리 확보가 꽤나 치열함"
+    },
+    {
+      "name": "랜드마크시티수변공원",
+      "address": "인천광역시 연수구 송도동 401",
+      "features": "바다뷰, 야경명소",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "인천대교뷰\n트램펄린있음"
+    },
+    {
+      "name": "통영..",
+      "address": "경상남도 통영시 산양읍 연화리 165-7",
+      "features": "바다뷰, 일몰명소",
+      "parking_fee": "무료",
+      "nearby_toilet": "없음",
+      "note": "일몰명소\n근처 달아공원에 사람진짜많은데 여기가 더 한적하고 좋음"
+    },
+    {
+      "name": "충주 우륵대교 뷰",
+      "address": "충청북도 충주시 금가면 유송리 259-9",
+      "features": "야경명소, 강/호수뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "우륵대교 불빛 있어서 야경 명소\n차박, 차크닉 많음"
+    },
+    {
+      "name": "수주팔봉 야영지",
+      "address": "충북 충주시 대소원면 문주리",
+      "features": "강/호수뷰",
+      "parking_fee": null,
+      "nearby_toilet": null,
+      "note": "충주 차크닉 제일 유명"
+    },
+    {
+      "name": "반포한강공원",
+      "address": null,
+      "features": "강/호수뷰, 야경명소",
+      "parking_fee": null,
+      "nearby_toilet": "주차장에 있음",
+      "note": "분수쇼"
+    },
+    {
+      "name": "남양주 한강 체육공원",
+      "address": null,
+      "features": "강/호수뷰",
+      "parking_fee": "1시간무료, 이후 ??",
+      "nearby_toilet": "주차장에 있음",
+      "note": "1시간 무료"
+    },
+    {
+      "name": "해오름호수공원야외주차장",
+      "address": "인천 남동구 논현동 767-6",
+      "features": "바다뷰, 야경명소, 강/호수뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "왼쪽엔 해오름호수뷰, 오른쪽엔 바다뷰"
+    },
+    {
+      "name": "춘천레저대회 주차장(삼악산 호수 케이블카 임시 주차장)",
+      "address": "강원 춘천시 삼천동 388-1",
+      "features": "강/호수뷰",
+      "parking_fee": "무료",
+      "nearby_toilet": "삼악산호수케이블카",
+      "note": "바로앞에 호수가..\n바로앞에 카페에서 감자빵 포장해와서 냠냠하면 좋음"
+    },
+    {
+      "name": "당포성",
+      "address": "경기 연천군 미산면 동이리",
+      "features": "야경명소",
+      "parking_fee": "무료",
+      "nearby_toilet": null,
+      "note": "별이..진짜 많음..."
+    }
+  ]
+} 
