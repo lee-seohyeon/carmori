@@ -104,56 +104,195 @@ class _MealCalculatorScreenState extends State<MealCalculatorScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('연비 설정'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: cityController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: '도심 연비',
-                suffixText: 'km/$fuelUnit',
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: highwayController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: '고속도로 연비',
-                suffixText: 'km/$fuelUnit',
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: combinedController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: '복합 연비',
-                suffixText: 'km/$fuelUnit',
-              ),
-            ),
-          ],
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('취소'),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
           ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _efficiencySettings[_selectedFuelType] = FuelEfficiencySettings(
-                  cityEfficiency: double.tryParse(cityController.text),
-                  highwayEfficiency: double.tryParse(highwayController.text),
-                  combinedEfficiency: double.tryParse(combinedController.text),
-                );
-              });
-              Navigator.pop(context);
-            },
-            child: Text('저장'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  HeroIcon(
+                    HeroIcons.chartBar,
+                    style: HeroIconStyle.outline,
+                    size: 24,
+                    color: _fuelData[_selectedFuelType]!['color'],
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    '연비 설정',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1C1C1E),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Column(
+                  children: [
+                    _buildEfficiencyInputField(
+                      controller: cityController,
+                      label: '도심 연비',
+                      hint: '도심 연비를 입력하세요',
+                      icon: HeroIcons.buildingOffice2,
+                    ),
+                    Container(
+                      height: 1,
+                      color: Colors.grey[200],
+                    ),
+                    _buildEfficiencyInputField(
+                      controller: highwayController,
+                      label: '고속도로 연비',
+                      hint: '고속도로 연비를 입력하세요',
+                      icon: HeroIcons.truck,
+                    ),
+                    Container(
+                      height: 1,
+                      color: Colors.grey[200],
+                    ),
+                    _buildEfficiencyInputField(
+                      controller: combinedController,
+                      label: '복합 연비',
+                      hint: '복합 연비를 입력하세요',
+                      icon: HeroIcons.chartBar,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        '취소',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _efficiencySettings[_selectedFuelType] = FuelEfficiencySettings(
+                            cityEfficiency: double.tryParse(cityController.text),
+                            highwayEfficiency: double.tryParse(highwayController.text),
+                            combinedEfficiency: double.tryParse(combinedController.text),
+                          );
+                        });
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: _fuelData[_selectedFuelType]!['color'],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        '저장',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEfficiencyInputField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required HeroIcons icon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          HeroIcon(
+            icon,
+            style: HeroIconStyle.outline,
+            size: 20,
+            color: _fuelData[_selectedFuelType]!['color'],
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: hint,
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                    isDense: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            'km/$fuelUnit',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
           ),
         ],
       ),
@@ -179,102 +318,316 @@ class _MealCalculatorScreenState extends State<MealCalculatorScreen> {
       content = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CheckboxListTile(
-            title: Text('직접 입력 사용'),
-            value: settings.useCustomPrice,
-            onChanged: (value) {
-              setState(() {
-                settings.useCustomPrice = value ?? false;
-              });
-              Navigator.pop(context);
-              _showPriceSettingsDialog();
-            },
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey[200]!),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey[200]!),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      HeroIcon(
+                        HeroIcons.adjustmentsHorizontal,
+                        style: HeroIconStyle.outline,
+                        size: 20,
+                        color: _fuelData[_selectedFuelType]!['color'],
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          '직접 입력 사용',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1C1C1E),
+                          ),
+                        ),
+                      ),
+                      Switch(
+                        value: settings.useCustomPrice,
+                        onChanged: (value) {
+                          setState(() {
+                            settings.useCustomPrice = value;
+                          });
+                          Navigator.pop(context);
+                          _showPriceSettingsDialog();
+                        },
+                        activeColor: _fuelData[_selectedFuelType]!['color'],
+                      ),
+                    ],
+                  ),
+                ),
+                if (settings.useCustomPrice) ...[
+                  _buildPriceInputField(
+                    controller: slowController,
+                    label: '완속 충전 요금',
+                    hint: '완속 충전 요금을 입력하세요',
+                    icon: HeroIcons.clock,
+                    unit: 'kWh',
+                  ),
+                  Container(
+                    height: 1,
+                    color: Colors.grey[200],
+                  ),
+                  _buildPriceInputField(
+                    controller: fastController,
+                    label: '급속 충전 요금',
+                    hint: '급속 충전 요금을 입력하세요',
+                    icon: HeroIcons.bolt,
+                    unit: 'kWh',
+                  ),
+                ],
+              ],
+            ),
           ),
-          if (settings.useCustomPrice) ...[
-            TextField(
-              controller: slowController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: '완속 충전 요금',
-                suffixText: '원/kWh',
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: fastController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: '급속 충전 요금',
-                suffixText: '원/kWh',
-              ),
-            ),
-          ],
         ],
       );
     } else {
       content = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CheckboxListTile(
-            title: Text('직접 입력 사용'),
-            value: settings.useCustomPrice,
-            onChanged: (value) {
-              setState(() {
-                settings.useCustomPrice = value ?? false;
-              });
-              Navigator.pop(context);
-              _showPriceSettingsDialog();
-            },
-          ),
-          if (settings.useCustomPrice)
-            TextField(
-              controller: priceController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: '연료 가격',
-                suffixText: '원/$fuelUnit',
-              ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey[200]!),
             ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey[200]!),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      HeroIcon(
+                        HeroIcons.adjustmentsHorizontal,
+                        style: HeroIconStyle.outline,
+                        size: 20,
+                        color: _fuelData[_selectedFuelType]!['color'],
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          '직접 입력 사용',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1C1C1E),
+                          ),
+                        ),
+                      ),
+                      Switch(
+                        value: settings.useCustomPrice,
+                        onChanged: (value) {
+                          setState(() {
+                            settings.useCustomPrice = value;
+                          });
+                          Navigator.pop(context);
+                          _showPriceSettingsDialog();
+                        },
+                        activeColor: _fuelData[_selectedFuelType]!['color'],
+                      ),
+                    ],
+                  ),
+                ),
+                if (settings.useCustomPrice)
+                  _buildPriceInputField(
+                    controller: priceController,
+                    label: '연료 가격',
+                    hint: '연료 가격을 입력하세요',
+                    icon: HeroIcons.currencyDollar,
+                    unit: fuelUnit,
+                  ),
+              ],
+            ),
+          ),
         ],
       );
     }
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('연료 가격 설정'),
-        content: content,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('취소'),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
           ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                if (_selectedFuelType == '전기' && settings.useCustomPrice) {
-                  final slowController = TextEditingController(
-                    text: settings.slowChargingPrice?.toString() ?? '',
-                  );
-                  final fastController = TextEditingController(
-                    text: settings.fastChargingPrice?.toString() ?? '',
-                  );
-                  _priceSettings[_selectedFuelType] = FuelPriceSettings(
-                    customPrice: double.tryParse(priceController.text) ?? settings.customPrice,
-                    useCustomPrice: settings.useCustomPrice,
-                    slowChargingPrice: double.tryParse(slowController.text),
-                    fastChargingPrice: double.tryParse(fastController.text),
-                  );
-                } else {
-                  _priceSettings[_selectedFuelType] = FuelPriceSettings(
-                    customPrice: double.tryParse(priceController.text) ?? settings.customPrice,
-                    useCustomPrice: settings.useCustomPrice,
-                  );
-                }
-              });
-              Navigator.pop(context);
-            },
-            child: Text('저장'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  HeroIcon(
+                    HeroIcons.currencyDollar,
+                    style: HeroIconStyle.outline,
+                    size: 24,
+                    color: _fuelData[_selectedFuelType]!['color'],
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    '가격 설정',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1C1C1E),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              content,
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        '취소',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          if (_selectedFuelType == '전기' && settings.useCustomPrice) {
+                            final slowController = TextEditingController(
+                              text: settings.slowChargingPrice?.toString() ?? '',
+                            );
+                            final fastController = TextEditingController(
+                              text: settings.fastChargingPrice?.toString() ?? '',
+                            );
+                            _priceSettings[_selectedFuelType] = FuelPriceSettings(
+                              customPrice: double.tryParse(priceController.text) ?? settings.customPrice,
+                              useCustomPrice: settings.useCustomPrice,
+                              slowChargingPrice: double.tryParse(slowController.text),
+                              fastChargingPrice: double.tryParse(fastController.text),
+                            );
+                          } else {
+                            _priceSettings[_selectedFuelType] = FuelPriceSettings(
+                              customPrice: double.tryParse(priceController.text) ?? settings.customPrice,
+                              useCustomPrice: settings.useCustomPrice,
+                            );
+                          }
+                        });
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: _fuelData[_selectedFuelType]!['color'],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        '저장',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPriceInputField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required HeroIcons icon,
+    required String unit,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          HeroIcon(
+            icon,
+            style: HeroIconStyle.outline,
+            size: 20,
+            color: _fuelData[_selectedFuelType]!['color'],
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: hint,
+                    hintStyle: TextStyle(
+                      color: Colors.grey[400],
+                      fontWeight: FontWeight.w400,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                    isDense: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '원/$unit',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
           ),
         ],
       ),
