@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
+import '../models/fuel_settings.dart';
 
 class MealCalculatorScreen extends StatefulWidget {
   const MealCalculatorScreen({super.key});
@@ -13,42 +14,62 @@ class _MealCalculatorScreenState extends State<MealCalculatorScreen> {
   int _calculationMode = 0; // 0: 금액→거리, 1: 거리→금액
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _distanceController = TextEditingController();
+  
+  // 연비 설정
+  final Map<String, FuelEfficiencySettings> _efficiencySettings = {
+    '휘발유': FuelEfficiencySettings(combinedEfficiency: 12.0),
+    '경유': FuelEfficiencySettings(combinedEfficiency: 15.0),
+    'LPG': FuelEfficiencySettings(combinedEfficiency: 9.0),
+    '전기': FuelEfficiencySettings(combinedEfficiency: 5.0),
+  };
+  
+  // 연료 가격 설정
+  final Map<String, FuelPriceSettings> _priceSettings = {
+    '휘발유': FuelPriceSettings(customPrice: 1650),
+    '경유': FuelPriceSettings(customPrice: 1450),
+    'LPG': FuelPriceSettings(customPrice: 950),
+    '전기': FuelPriceSettings(
+      customPrice: 300,
+      slowChargingPrice: 250,
+      fastChargingPrice: 350,
+    ),
+  };
 
   // 연료별 기본 정보
   final Map<String, Map<String, dynamic>> _fuelData = {
     '휘발유': {
-      'price': 1650, // 원/L
-      'efficiency': 12.0, // km/L
-      'unit': 'L',
       'icon': HeroIcons.fire,
       'color': Color(0xFF007AFF),
     },
     '경유': {
-      'price': 1450, // 원/L
-      'efficiency': 15.0, // km/L
-      'unit': 'L',
       'icon': HeroIcons.fire,
       'color': Color(0xFF34C759),
     },
     'LPG': {
-      'price': 950, // 원/L
-      'efficiency': 9.0, // km/L
-      'unit': 'L',
       'icon': HeroIcons.fire,
       'color': Color(0xFFFF9500),
     },
     '전기': {
-      'price': 300, // 원/kWh
-      'efficiency': 5.0, // km/kWh
-      'unit': 'kWh',
       'icon': HeroIcons.bolt,
       'color': Color(0xFF30D158),
     },
   };
 
-  double get fuelPrice => _fuelData[_selectedFuelType]!['price'].toDouble();
-  double get fuelEfficiency => _fuelData[_selectedFuelType]!['efficiency'].toDouble();
-  String get fuelUnit => _fuelData[_selectedFuelType]!['unit'];
+  String _selectedChargingType = '완속'; // 전기차 충전 타입
+
+  double get fuelPrice {
+    if (_selectedFuelType == '전기') {
+      return _priceSettings[_selectedFuelType]!.getEffectivePrice(
+        _selectedFuelType,
+        chargingType: _selectedChargingType,
+      );
+    }
+    return _priceSettings[_selectedFuelType]!.getEffectivePrice(_selectedFuelType);
+  }
+
+  double get fuelEfficiency => _efficiencySettings[_selectedFuelType]!.getEffectiveEfficiency();
+  
+  String get fuelUnit => _selectedFuelType == '전기' ? 'kWh' : 'L';
 
   // 계산 결과
   double get calculatedDistance {
@@ -67,6 +88,197 @@ class _MealCalculatorScreenState extends State<MealCalculatorScreen> {
       return fuelAmount * fuelPrice;
     }
     return 0.0;
+  }
+
+  void _showEfficiencySettingsDialog() {
+    final settings = _efficiencySettings[_selectedFuelType]!;
+    final cityController = TextEditingController(
+      text: settings.cityEfficiency?.toString() ?? '',
+    );
+    final highwayController = TextEditingController(
+      text: settings.highwayEfficiency?.toString() ?? '',
+    );
+    final combinedController = TextEditingController(
+      text: settings.combinedEfficiency?.toString() ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('연비 설정'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: cityController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: '도심 연비',
+                suffixText: 'km/$fuelUnit',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: highwayController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: '고속도로 연비',
+                suffixText: 'km/$fuelUnit',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: combinedController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: '복합 연비',
+                suffixText: 'km/$fuelUnit',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('취소'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _efficiencySettings[_selectedFuelType] = FuelEfficiencySettings(
+                  cityEfficiency: double.tryParse(cityController.text),
+                  highwayEfficiency: double.tryParse(highwayController.text),
+                  combinedEfficiency: double.tryParse(combinedController.text),
+                );
+              });
+              Navigator.pop(context);
+            },
+            child: Text('저장'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPriceSettingsDialog() {
+    final settings = _priceSettings[_selectedFuelType]!;
+    final priceController = TextEditingController(
+      text: settings.customPrice.toString(),
+    );
+    
+    Widget content;
+    
+    if (_selectedFuelType == '전기') {
+      final slowController = TextEditingController(
+        text: settings.slowChargingPrice?.toString() ?? '',
+      );
+      final fastController = TextEditingController(
+        text: settings.fastChargingPrice?.toString() ?? '',
+      );
+      
+      content = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CheckboxListTile(
+            title: Text('직접 입력 사용'),
+            value: settings.useCustomPrice,
+            onChanged: (value) {
+              setState(() {
+                settings.useCustomPrice = value ?? false;
+              });
+              Navigator.pop(context);
+              _showPriceSettingsDialog();
+            },
+          ),
+          if (settings.useCustomPrice) ...[
+            TextField(
+              controller: slowController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: '완속 충전 요금',
+                suffixText: '원/kWh',
+              ),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: fastController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: '급속 충전 요금',
+                suffixText: '원/kWh',
+              ),
+            ),
+          ],
+        ],
+      );
+    } else {
+      content = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CheckboxListTile(
+            title: Text('직접 입력 사용'),
+            value: settings.useCustomPrice,
+            onChanged: (value) {
+              setState(() {
+                settings.useCustomPrice = value ?? false;
+              });
+              Navigator.pop(context);
+              _showPriceSettingsDialog();
+            },
+          ),
+          if (settings.useCustomPrice)
+            TextField(
+              controller: priceController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: '연료 가격',
+                suffixText: '원/$fuelUnit',
+              ),
+            ),
+        ],
+      );
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('연료 가격 설정'),
+        content: content,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('취소'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                if (_selectedFuelType == '전기' && settings.useCustomPrice) {
+                  final slowController = TextEditingController(
+                    text: settings.slowChargingPrice?.toString() ?? '',
+                  );
+                  final fastController = TextEditingController(
+                    text: settings.fastChargingPrice?.toString() ?? '',
+                  );
+                  _priceSettings[_selectedFuelType] = FuelPriceSettings(
+                    customPrice: double.tryParse(priceController.text) ?? settings.customPrice,
+                    useCustomPrice: settings.useCustomPrice,
+                    slowChargingPrice: double.tryParse(slowController.text),
+                    fastChargingPrice: double.tryParse(fastController.text),
+                  );
+                } else {
+                  _priceSettings[_selectedFuelType] = FuelPriceSettings(
+                    customPrice: double.tryParse(priceController.text) ?? settings.customPrice,
+                    useCustomPrice: settings.useCustomPrice,
+                  );
+                }
+              });
+              Navigator.pop(context);
+            },
+            child: Text('저장'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -131,6 +343,12 @@ class _MealCalculatorScreenState extends State<MealCalculatorScreen> {
                     children: [
                       // 차량 유종 선택
                       _buildFuelTypeSection(),
+                      if (_selectedFuelType == '전기')
+                        _buildChargingTypeSection(),
+                      const SizedBox(height: 32),
+                      
+                      // 연비 및 연료 가격 설정
+                      _buildSettingsSection(),
                       const SizedBox(height: 32),
                       
                       // 계산 모드 선택
@@ -151,6 +369,182 @@ class _MealCalculatorScreenState extends State<MealCalculatorScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSettingsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '상세 설정',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1C1C1E),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: _showEfficiencySettingsDialog,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey[200]!),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          HeroIcon(
+                            HeroIcons.chartBar,
+                            style: HeroIconStyle.outline,
+                            size: 20,
+                            color: _fuelData[_selectedFuelType]!['color'],
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            '연비 설정',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${fuelEfficiency}km/$fuelUnit',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: _fuelData[_selectedFuelType]!['color'],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: GestureDetector(
+                onTap: _showPriceSettingsDialog,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey[200]!),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          HeroIcon(
+                            HeroIcons.currencyDollar,
+                            style: HeroIconStyle.outline,
+                            size: 20,
+                            color: _fuelData[_selectedFuelType]!['color'],
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            '가격 설정',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${fuelPrice.toStringAsFixed(0)}원/$fuelUnit',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: _fuelData[_selectedFuelType]!['color'],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChargingTypeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        const Text(
+          '충전 타입',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1C1C1E),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: ['완속', '급속'].map((type) {
+            final isSelected = _selectedChargingType == type;
+            
+            return Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedChargingType = type;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: isSelected ? _fuelData['전기']!['color'] : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isSelected ? _fuelData['전기']!['color'] : Colors.grey[300]!,
+                      width: 2,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      HeroIcon(
+                        type == '완속' ? HeroIcons.clock : HeroIcons.bolt,
+                        style: HeroIconStyle.outline,
+                        size: 28,
+                        color: isSelected ? Colors.white : Colors.grey[600],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        type,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected ? Colors.white : Colors.grey[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
