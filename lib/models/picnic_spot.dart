@@ -5,6 +5,7 @@ class PicnicSpot {
   final String? parkingFee;
   final String? nearbyToilet;
   final String? note;
+  final String? imageUrl;
 
   PicnicSpot({
     required this.name,
@@ -13,6 +14,7 @@ class PicnicSpot {
     this.parkingFee,
     this.nearbyToilet,
     this.note,
+    this.imageUrl,
   });
 
   factory PicnicSpot.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class PicnicSpot {
       parkingFee: json['parking_fee'],
       nearbyToilet: json['nearby_toilet'],
       note: json['note'],
+      imageUrl: json['image_url'],
     );
   }
 
@@ -34,6 +37,7 @@ class PicnicSpot {
       'parking_fee': parkingFee,
       'nearby_toilet': nearbyToilet,
       'note': note,
+      'image_url': imageUrl,
     };
   }
 
