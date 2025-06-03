@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/app_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_screen.dart';
 
 void main() {
   runApp(const CarmoriApp());
@@ -32,7 +32,7 @@ class CarmoriApp extends StatelessWidget {
             onBackground: Colors.black,
           ),
         ),
-        home: const HomeScreen(),
+        home: const MainScreen(),
       ),
     );
   }

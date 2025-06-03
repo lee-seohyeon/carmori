@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
+        bottom: true,
         child: Consumer<AppProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading) {
@@ -80,10 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Content
                 Expanded(
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.06),
@@ -93,14 +97,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
                       child: provider.viewMode == ViewMode.list
                           ? const SpotListView()
                           : const SpotMapView(),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
               ],
             );
           },
